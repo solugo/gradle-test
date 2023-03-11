@@ -4,8 +4,7 @@ import io.github.classgraph.ClassGraph
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.streams.asSequence
-import kotlin.streams.toList
+import kotlin.concurrent.thread
 
 class Directory(
     val path: Path,
@@ -17,7 +16,7 @@ class Directory(
 
         fun GradleTest.withTemporaryDirectory(
             block: Directory.() -> Unit = {},
-        ) = Directory(Files.createTempDirectory("gradleProject"), true).apply {
+        ) = Directory(Files.createTempDirectory("gradleProject"), deleteOnFinish = true).apply {
             set(Directory, this)
             block()
         }
@@ -57,7 +56,9 @@ class Directory(
     }
 
     override fun close() {
-        if (deleteOnFinish) Files.walk(path).sorted(Comparator.reverseOrder()).forEach(Files::delete)
+        if (deleteOnFinish) Files.walk(path).sorted(Comparator.reverseOrder()).forEach {
+            it.toFile().delete()
+        }
     }
 
 }

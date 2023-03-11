@@ -15,7 +15,7 @@ class GradleTest {
         }
     }
 
-    private val context = hashMapOf<Key<*>, Any>()
+    private val context = LinkedHashMap<Key<*>, Any>()
 
     fun <T : Any> set(key: Key<T>, value: T) = synchronized(context) {
         context[key] = value
@@ -37,7 +37,7 @@ class GradleTest {
     }
 
     fun close() {
-        context.values.forEach {
+        context.values.reversed().forEach {
             (it as? AutoCloseable)?.close()
         }
     }
@@ -54,33 +54,4 @@ class GradleTest {
 
     abstract class Key<T : Any>
 
-    class Context {
-        private val context = hashMapOf<Key<*>, Any>()
-
-        fun <T : Any> set(key: Key<T>, value: T) = synchronized(context) {
-            context[key] = value
-        }
-
-        @Suppress("unchecked_cast")
-        fun <T : Any> get(key: Key.Creatable<T>): T = synchronized(context) {
-            context.computeIfAbsent(key) {
-                key.supplier(this)
-            } as T
-        }
-
-        fun <T : Any> getOrNull(key: Key<T>) = synchronized(context) {
-            context.get(key)
-        }
-
-        fun close() {
-            context.values.forEach {
-                (it as? AutoCloseable)?.close()
-            }
-        }
-
-        abstract class Key<T : Any> {
-            abstract class Creatable<T : Any>(val supplier: Context.() -> T) : Key<T>()
-        }
-
-    }
 }

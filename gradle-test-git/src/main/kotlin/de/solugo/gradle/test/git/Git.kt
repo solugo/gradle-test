@@ -2,34 +2,35 @@ package de.solugo.gradle.test.git
 
 import de.solugo.gradle.test.core.Directory
 import de.solugo.gradle.test.core.GradleTest
+import org.eclipse.jgit.internal.storage.file.FileRepository
+import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 
 class Git(
-    val git: org.eclipse.jgit.api.Git
-) {
+    val repository: Repository,
+) : AutoCloseable {
+
+    val git = org.eclipse.jgit.api.Git.wrap(repository)
+
     companion object : GradleTest.Key<Git>() {
         fun GradleTest.git(block: Git.() -> Unit = {}) = getOrSet(Git) {
             Git(
-                git = org.eclipse.jgit.api.Git.init().run {
-                    val dir = get(Directory).path.toFile()
-                    setDirectory(dir)
-                    call().apply {
-                        dir.resolve(".gitignore").writeText("/.gradle")
-                    }
+                repository = FileRepositoryBuilder().run {
+                    gitDir = get(Directory).path.resolve(".git").toFile()
+                    build()
+                }.apply {
+                    create()
                 }
             ).apply(block)
         }
     }
 
     fun commit(message: String, add: Boolean = true) {
-        if (add) {
-            git.add().apply {
-                addFilepattern(".")
-                call()
-            }
-        }
         git.commit().apply {
             this.message = message
+            setAll(add)
             setAllowEmpty(true)
+            setNoVerify(true)
             call()
         }
     }
@@ -39,5 +40,10 @@ class Git(
             this.name = name
             call()
         }
+    }
+
+    override fun close() {
+        git.close()
+        repository.close()
     }
 }

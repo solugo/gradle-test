@@ -16,7 +16,6 @@ class Executor(
                     withDebug(true)
                     build()
                 }
-
             ).apply(block)
         }
     }

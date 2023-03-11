@@ -2,8 +2,8 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.5.20" apply false
-    id("org.jetbrains.dokka") version "1.5.0" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.8.10" apply false
+    id("org.jetbrains.dokka") version "1.8.10" apply false
     id("maven-publish")
     id("signing")
 }
