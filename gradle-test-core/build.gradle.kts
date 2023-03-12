@@ -7,6 +7,6 @@ plugins {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("io.github.classgraph:classgraph:4.8.110")
+    implementation("io.github.classgraph:classgraph:4.8.157")
     compileOnly(gradleTestKit())
 }

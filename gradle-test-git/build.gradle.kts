@@ -7,5 +7,5 @@ plugins {
 
 dependencies {
     api(project(":gradle-test-core"))
-    api("org.eclipse.jgit:org.eclipse.jgit:5.12.0.202106070339-r")
+    api("org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r")
 }
