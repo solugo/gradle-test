@@ -26,11 +26,15 @@ class Git(
     }
 
     fun commit(message: String, add: Boolean = true) {
+        if (add) {
+            git.add().apply {
+                addFilepattern(".")
+                call()
+            }
+        }
         git.commit().apply {
             this.message = message
-            setAll(add)
             setAllowEmpty(true)
-            setNoVerify(true)
             call()
         }
     }
